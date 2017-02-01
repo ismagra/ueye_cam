@@ -1,0 +1,23 @@
+
+INSTALACION Y USO DEL PAQUETE UEYE_CAM
+
+1- Descargarse el software de la camara de ids. Para ello acceder a la pagina 
+	https://es.ids-imaging.com/download-ueye-lin64.html
+	Seleccionar el sistema operativo y descargar IDS Software Suite 4.80.2. (Para acceder a estos archivos es necesario crearse una cuenta en la pagina)
+	SI se quiere configurar un servidor RTSP, descargar el siguiente archivo tambien.
+	
+2- A la hora de instalar, seguir los pasos del archivo README que viene en la carpeta
+3- Crear un archivo de calibracion de la camara .yaml e incluirlo en la carpeta /.ros/camera_info
+4- A partir del software descargado, usar el programa ueyedemo para crear un archivo camera.ini y ubicarlo en la carpeta /.ros/camera_conf
+5- Ubicar esta carpeta en el workspace de ros y compilarla.
+
+6- Descripcion del paquete
+	Es una modificacion del paquete ueye_cam que se puede descargar de la pagina de ros y de su git.
+	El archivo /launch/rgb8.launch contiene los parametros con los que se lanzara la camara, si e quiere cambiar alguno de ellos, como los fps, modificarlos en este archivo.
+	En este paquete hay varios nodos, los dos mas importantes son: controller.cpp y take_image.cpp
+	take image.cpp captura tantas imagenes como la variable image_count diga, si se quiere que se tomen 100 imagenes seguidas, cambiar eese valor en las lineas 48 y 57
+	controller.cpp principalmente lo que hace es lanzar take_image.cpp. Si se quiere que se tomen 100 imagenes 4 veces, cambiar ese 4 en las lineas 16 y 22. Modificar	
+		de igual forma el tiempo que se quiere esperar entre capturas.
+	Las imagenes son guardadas en la carpeta ./ros, aunque se puede modificar su ubicación
+	
+7- Para lanzar el paquete, simplemente despues de compilar, ejecutar $roslaunch ueye_cam rgb8.launch
