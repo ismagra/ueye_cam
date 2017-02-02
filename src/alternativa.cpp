@@ -103,6 +103,15 @@ int main(int argc, char** argv)
 	}
 	}
 		
+		
+	// Load parameters from specified file using a relative path
+	INT nRet3 = is_ParameterSet(hCam, IS_PARAMETERSET_CMD_LOAD_FILE, (void*)L"configuracion.ini", NULL);
+	if (nRet3 == IS_SUCCESS)
+	{
+	  cout << "cargado en archivo" << endl;
+	}
+	
+	
 	//~ INT nRet1 = is_ParameterSet(hCam, IS_PARAMETERSET_CMD_SAVE_EEPROM, NULL, NULL);
 	//~ if (nRet1 == IS_SUCCESS)
 	//~ {
@@ -110,16 +119,9 @@ int main(int argc, char** argv)
 	//~ }
 
 	
-	//~ // Load parameters from specified file using a relative path
-	//~ INT nRet3 = is_ParameterSet(hCam, IS_PARAMETERSET_CMD_LOAD_FILE, (void*)L"PRUEBA1.ini", NULL);
-	//~ if (nRet3 == IS_SUCCESS)
-	//~ {
-	  //~ cout << "cargado en archivo" << endl;
-	//~ }
-	
 	
 	//~ // Save parameters to specified file
-	//~ INT nRet2 = is_ParameterSet(hCam, IS_PARAMETERSET_CMD_SAVE_FILE, (void*)L"PRUEBA.ini", NULL);
+	//~ INT nRet2 = is_ParameterSet(hCam, IS_PARAMETERSET_CMD_SAVE_FILE, (void*)L"PRUEBA6.ini", NULL);
 	//~ if (nRet2 == IS_SUCCESS)
 	//~ {
 	  //~ cout << "salvado en archivo" << endl;
@@ -196,32 +198,61 @@ int main(int argc, char** argv)
 	 
     
 	//Captura de imagen
-	int sho = is_FreezeVideo(hCam, IS_WAIT);		//No pasa de aqui.
-	if(sho != IS_SUCCESS)
-	{
-		cout<<endl<<"Imposible adquirir imagen de la camara"<<endl;
-		system("PAUSE");
-		exit(-1);
-	}
-	if (sho == IS_SUCCESS){
-		//~ int m_Ret = is_GetActiveImageMem(hCam, &pLast, &dummy);
-		//~ int n_Ret = is_GetImageMem(hCam, (void**)&pLast);
-		is_GetActiveImageMem(hCam, &pLast, &dummy);
-		is_GetImageMem(hCam, (void**)&pLast);
-	   }
+	//~ int sho = is_FreezeVideo(hCam, IS_WAIT);		//No pasa de aqui.
+	//~ if(sho != IS_SUCCESS)
+	//~ {
+		//~ cout<<endl<<"Imposible adquirir imagen de la camara"<<endl;
+		//~ system("PAUSE");
+		//~ exit(-1);
+	//~ }
+	//~ if (sho == IS_SUCCESS)
+	//~ {
+		//~ is_GetActiveImageMem(hCam, &pLast, &dummy);		//(int m_Ret =)
+		//~ is_GetImageMem(hCam, (void**)&pLast);		//(int n_Ret=)
+	//~ }
 
-	 IplImage* tmpImg = cvCreateImageHeader(cvSize (pXPos, pYPos), IPL_DEPTH_8U,3); 
-	 tmpImg->imageData = m_pcImageMemory;
-	 frame = cv::cvarrToMat(tmpImg);
-	 imshow("Prueba",frame);
-	 waitKey(0);
+	//~ IplImage* tmpImg = cvCreateImageHeader(cvSize (pXPos, pYPos), IPL_DEPTH_8U,3); 
+	//~ tmpImg->imageData = m_pcImageMemory;
+	//~ frame = cv::cvarrToMat(tmpImg);
+	//~ imshow("Prueba",frame);
+	//~ waitKey(0);
+	 
+	//Salvar fotos en tres modos
+	IMAGE_FILE_PARAMS ImageFileParams;
+	ImageFileParams.pwchFileName = L"./snap_BGR8.png";
+	ImageFileParams.pnImageID = NULL;
+	ImageFileParams.ppcImageMem = NULL;
+	ImageFileParams.nQuality = 100;		//0 pone el valor por defecto = 75
+	ImageFileParams.nFileType = IS_IMG_PNG;
+
+	INT nRet4 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
+	printf("Status is_ImageFile %d\n",nRet4);
+
+	ImageFileParams.pwchFileName = L"./snap_BGR8.bmp";
+	ImageFileParams.pnImageID = NULL;
+	ImageFileParams.ppcImageMem = NULL;
+	ImageFileParams.nQuality = 0;		//Ignorado para el metodo bmp
+	ImageFileParams.nFileType = IS_IMG_BMP;
+
+	INT nRet5 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
+	printf("Status is_ImageFile %d\n",nRet5);
+
+	ImageFileParams.pwchFileName = L"./snap_BGR8.jpg";
+	ImageFileParams.pnImageID = NULL;
+	ImageFileParams.ppcImageMem = NULL;
+	ImageFileParams.nQuality = 100;		//100 es el modo de maxima calidad
+	ImageFileParams.nFileType = IS_IMG_JPG;
+
+	INT nRet6 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
+	printf("Status is_ImageFile %d\n",nRet6);
 
 
 	//Cierre de la camara y limpieza
 	int en = is_ExitCamera(hCam);
-	 if (en == IS_SUCCESS){
+	if (en == IS_SUCCESS)
+	{
 		cout<<endl<<"Camara cerrada correctamente"<<endl;
-	 } 
+	} 
 	 
 	 
 	ros::spin();
