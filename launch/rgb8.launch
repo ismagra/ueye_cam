@@ -73,6 +73,8 @@
   
   <node ns="camera" name="image_proc" pkg="image_proc" type="image_proc" required="true"/>	<!-- nodo para eliminar la distorsion de la camara -->
 
+<!--
   <node name="controller" pkg="ueye_cam" type="controller" required="true" output="screen" /> 
+-->
   
 </launch>

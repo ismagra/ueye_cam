@@ -198,18 +198,18 @@ int main(int argc, char** argv)
 	 
     
 	//Captura de imagen
-	//~ int sho = is_FreezeVideo(hCam, IS_WAIT);		//No pasa de aqui.
-	//~ if(sho != IS_SUCCESS)
-	//~ {
-		//~ cout<<endl<<"Imposible adquirir imagen de la camara"<<endl;
-		//~ system("PAUSE");
-		//~ exit(-1);
-	//~ }
-	//~ if (sho == IS_SUCCESS)
-	//~ {
-		//~ is_GetActiveImageMem(hCam, &pLast, &dummy);		//(int m_Ret =)
-		//~ is_GetImageMem(hCam, (void**)&pLast);		//(int n_Ret=)
-	//~ }
+	int sho = is_FreezeVideo(hCam, IS_WAIT);		//No pasa de aqui.
+	if(sho != IS_SUCCESS)
+	{
+		cout<<endl<<"Imposible adquirir imagen de la camara"<<endl;
+		system("PAUSE");
+		exit(-1);
+	}
+	if (sho == IS_SUCCESS)
+	{
+		is_GetActiveImageMem(hCam, &pLast, &dummy);		//(int m_Ret =)
+		is_GetImageMem(hCam, (void**)&pLast);		//(int n_Ret=)
+	}
 
 	//~ IplImage* tmpImg = cvCreateImageHeader(cvSize (pXPos, pYPos), IPL_DEPTH_8U,3); 
 	//~ tmpImg->imageData = m_pcImageMemory;
@@ -228,33 +228,51 @@ int main(int argc, char** argv)
 	INT nRet4 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
 	printf("Status is_ImageFile %d\n",nRet4);
 
-	ImageFileParams.pwchFileName = L"./snap_BGR8.bmp";
-	ImageFileParams.pnImageID = NULL;
-	ImageFileParams.ppcImageMem = NULL;
-	ImageFileParams.nQuality = 0;		//Ignorado para el metodo bmp
-	ImageFileParams.nFileType = IS_IMG_BMP;
+	//~ ImageFileParams.pwchFileName = L"./snap_BGR8.bmp";
+	//~ ImageFileParams.pnImageID = NULL;
+	//~ ImageFileParams.ppcImageMem = NULL;
+	//~ ImageFileParams.nQuality = 0;		//Ignorado para el metodo bmp
+	//~ ImageFileParams.nFileType = IS_IMG_BMP;
 
-	INT nRet5 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
-	printf("Status is_ImageFile %d\n",nRet5);
+	//~ INT nRet5 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
+	//~ printf("Status is_ImageFile %d\n",nRet5);
 
-	ImageFileParams.pwchFileName = L"./snap_BGR8.jpg";
-	ImageFileParams.pnImageID = NULL;
-	ImageFileParams.ppcImageMem = NULL;
-	ImageFileParams.nQuality = 100;		//100 es el modo de maxima calidad
-	ImageFileParams.nFileType = IS_IMG_JPG;
+	//~ ImageFileParams.pwchFileName = L"./snap_BGR8.jpg";
+	//~ ImageFileParams.pnImageID = NULL;
+	//~ ImageFileParams.ppcImageMem = NULL;
+	//~ ImageFileParams.nQuality = 100;		//100 es el modo de maxima calidad
+	//~ ImageFileParams.nFileType = IS_IMG_JPG;
 
-	INT nRet6 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
-	printf("Status is_ImageFile %d\n",nRet6);
+	//~ INT nRet6 = is_ImageFile(hCam, IS_IMAGE_FILE_CMD_SAVE, (void*) &ImageFileParams, sizeof(ImageFileParams));
+	//~ printf("Status is_ImageFile %d\n",nRet6);
 
 
-	//Cierre de la camara y limpieza
-	int en = is_ExitCamera(hCam);
-	if (en == IS_SUCCESS)
-	{
-		cout<<endl<<"Camara cerrada correctamente"<<endl;
-	} 
+	//~ //Cierre de la camara y limpieza
+	//~ int en = is_ExitCamera(hCam);
+	//~ if (en == IS_SUCCESS)
+	//~ {
+		//~ cout<<endl<<"Camara cerrada correctamente"<<endl;
+	//~ } 
 	 
 	 
-	ros::spin();
-	return 0;
+	//~ ros::spin();
+	//~ return 0;
+	
+//--------------------------------------------------------------------//
+//-------------------------PUBLICAR IMAGEN----------------------------//
+//--------------------------------------------------------------------//
+
+	ros::NodeHandle nh;
+	image_transport::ImageTransport it(nh);
+	image_transport::Publisher pub = it.advertise("camera11/image11", 1);
+
+	cv::Mat image = cv::imread("snap_BGR8.png", CV_LOAD_IMAGE_COLOR);
+	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
+
+	ros::Rate loop_rate(5);
+	while (nh.ok()) {
+	  pub.publish(msg);
+	  ros::spinOnce();
+	  loop_rate.sleep();
+	}
 }

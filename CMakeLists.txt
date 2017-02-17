@@ -108,11 +108,11 @@ target_link_libraries(take_image ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_executable(controller src/controller.cpp) 
 target_link_libraries(controller ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) 
 
-add_executable(ids src/ids.cpp) 
-target_link_libraries(ids ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${UEYE_LIBRARY} ${UEYECAM_LIB_NAME}) 
-
 add_executable(alternativa src/alternativa.cpp) 
 target_link_libraries(alternativa ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${UEYE_LIBRARY} ${UEYECAM_LIB_NAME}) 
+
+add_executable(camera src/camera.cpp) 
+target_link_libraries(camera ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${UEYE_LIBRARY} ${UEYECAM_LIB_NAME}) 
 
 
 # Do not package the barebones IDS drivers, since they will mask over the official drivers (when present)
